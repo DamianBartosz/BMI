@@ -1,6 +1,9 @@
 package com.example.bmi.bmi
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.time.LocalDate
 
 abstract class Bmi(val mass: Float, val height: Float, val bmiDate: LocalDate = LocalDate.now()) :
@@ -12,6 +15,7 @@ abstract class Bmi(val mass: Float, val height: Float, val bmiDate: LocalDate = 
     abstract val maxCorrectMass: Float
 
     abstract fun checkParams()
+    abstract fun toBmiData(): BmiData;
 
     fun getBmiCategory(): Int {
         return when {
@@ -27,20 +31,11 @@ abstract class Bmi(val mass: Float, val height: Float, val bmiDate: LocalDate = 
     }
 
     companion object {
-        fun fromString(savedStr: String): Bmi {
-            val stringArr = savedStr.split(";")
-            return if (stringArr[0] == "metric") {
-                BmiMetric(
-                    stringArr[1].toFloat(),
-                    stringArr[2].toFloat(),
-                    LocalDate.parse(stringArr[3])
-                )
+        fun fromBmiData(bmiData: BmiData): Bmi {
+            return if (bmiData.objType == "metric") {
+                BmiMetric(bmiData.mass, bmiData.height, bmiData.bmiDate)
             } else {
-                BmiImperial(
-                    stringArr[1].toFloat(),
-                    stringArr[2].toFloat(),
-                    LocalDate.parse(stringArr[3])
-                )
+                BmiImperial(bmiData.mass, bmiData.height, bmiData.bmiDate)
             }
         }
     }

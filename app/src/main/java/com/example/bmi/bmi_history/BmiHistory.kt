@@ -1,18 +1,15 @@
 package com.example.bmi.bmi_history
 
 import com.example.bmi.bmi.Bmi
+import com.example.bmi.bmi.BmiData
 
-class BmiHistory(savedStr: String = "") {
+class BmiHistory(savedHistory: List<BmiData>) {
     private val historyArray = Array<Bmi?>(10) { null }
     private var index: Int = 0
 
     init {
-        if (savedStr.isNotEmpty()) {
-            val stringTrimmed = savedStr.trim('[', ']')
-            val stringArr = stringTrimmed.split(", ")
-            for (item in stringArr.reversed()) {
-                addBmi(Bmi.fromString(item))
-            }
+        for (bmi in savedHistory){
+            addBmi(Bmi.fromBmiData(bmi));
         }
     }
 

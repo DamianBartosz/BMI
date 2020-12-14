@@ -7,7 +7,8 @@ import com.example.bmi.exceptions.IncorrectMetricMassException
 import java.time.LocalDate
 
 
-class BmiMetric(mass: Float, height: Float, bmiDate: LocalDate = LocalDate.now()) : Bmi(mass, height, bmiDate) {
+class BmiMetric(mass: Float, height: Float, bmiDate: LocalDate = LocalDate.now()) :
+    Bmi(mass, height, bmiDate) {
     override val bmi by lazy { mass / (height * height) * 10000 }
     override val minCorrectMass by lazy { calcCorrectMass(18.5f) }
     override val maxCorrectMass by lazy { calcCorrectMass(24.99f) }
@@ -24,6 +25,10 @@ class BmiMetric(mass: Float, height: Float, bmiDate: LocalDate = LocalDate.now()
         if (height < 50 || height > 300) {
             throw IncorrectMetricHeightException()
         }
+    }
+
+    override fun toBmiData(): BmiData {
+        return BmiData(mass, height, bmiDate, "metric")
     }
 
     private fun calcCorrectMass(correctBmi: Float): Float {

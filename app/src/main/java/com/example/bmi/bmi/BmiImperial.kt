@@ -6,7 +6,8 @@ import com.example.bmi.exceptions.IncorrectImperialHeightException
 import com.example.bmi.exceptions.IncorrectImperialMassException
 import java.time.LocalDate
 
-class BmiImperial(mass: Float, height: Float, bmiDate: LocalDate = LocalDate.now()) : Bmi(mass, height, bmiDate) {
+class BmiImperial(mass: Float, height: Float, bmiDate: LocalDate = LocalDate.now()) :
+    Bmi(mass, height, bmiDate) {
     override val bmi by lazy { mass / (height * height) * 703 }
     override val minCorrectMass by lazy { calcCorrectMass(18.5f) }
     override val maxCorrectMass by lazy { calcCorrectMass(24.99f) }
@@ -23,6 +24,10 @@ class BmiImperial(mass: Float, height: Float, bmiDate: LocalDate = LocalDate.now
         if (height < 20.0f || height > 120.0f) {
             throw IncorrectImperialHeightException()
         }
+    }
+
+    override fun toBmiData(): BmiData {
+        return BmiData(mass, height, bmiDate, "imperial")
     }
 
     private fun calcCorrectMass(correctBmi: Float): Float {

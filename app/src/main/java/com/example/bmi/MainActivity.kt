@@ -12,10 +12,13 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.room.Room
 import com.example.bmi.bmi.Bmi
 import com.example.bmi.bmi.BmiImperial
 import com.example.bmi.bmi.BmiMetric
 import com.example.bmi.bmi_history.BmiHistory
+import com.example.bmi.database.BmiDao
+import com.example.bmi.database.BmiDatabase
 import com.example.bmi.databinding.ActivityMainBinding
 import com.example.bmi.exceptions.IncorrectHeightException
 import com.example.bmi.exceptions.IncorrectMassException
@@ -32,23 +35,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var history: BmiHistory;
     private var PRIVATE_MODE = 0
     private val PREF_NAME = "BMI_HISTORY"
-    private lateinit var sharedPref: SharedPreferences
-    private lateinit var sharedPrefsEditor: SharedPreferences.Editor
+    private lateinit var dao: BmiDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPref = getSharedPreferences(PREF_NAME, PRIVATE_MODE)
-        sharedPrefsEditor = sharedPref.edit()
 
-        val historyStr = sharedPref.getString(PREF_NAME, "")
-
-        history = if (historyStr == null) {
-            BmiHistory()
-        } else {
-            BmiHistory(historyStr)
-        }
+        dao = BmiDatabase.getDatabase(application).bmiDao()
+        val x = dao.getAllBmiHistory()
+        history = BmiHistory(x)
 
     }
 
@@ -132,10 +128,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateHistory() {
         history.addBmi(lastBmi!!)
-        val historyStr = history.toString()
-        sharedPrefsEditor.apply {
-            putString(PREF_NAME, historyStr)
-            apply()
+        dao.insertBmi(lastBmi!!.toBmiData())
+        if (dao.getBmiHistoryCount()>10){
+            dao.deleteBmi(dao.getTheOldestBmi())
         }
     }
 
